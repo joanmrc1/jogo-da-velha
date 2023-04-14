@@ -1,16 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import matrizJson from '../data/matrizJson'
-import Table from './Table'
-import SelectIcon from './SelectIcon'
 import { FaLinux, FaWindows } from 'react-icons/fa'
 import { tableProps } from './TableInterface'
 import { toast } from 'react-toastify'
+import matrizJson from '../data/matrizJson'
+import Table from './Table'
+import SelectIcon from './SelectIcon'
 
 const Home = () => {
   const [matriz, setMatriz] = useState([...matrizJson])
   const [iconSelected, setIconSelected] = useState('')
   const [nextPlay, setNextPlay] = useState('')
   const [gameOver, setGameOver] = useState(false)
+  const isMountedRef = useRef(false);
 
   const marked = useCallback((data: tableProps) => {
     if (gameOver || iconSelected == '')  return
@@ -61,21 +62,20 @@ const Home = () => {
   }
 
   useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      if(!sessionStorage.getItem('matrizJson'))
+        sessionStorage.setItem('matrizJson', JSON.stringify(matrizJson))
+    }
+
     if (gameOver) {
       toast("Fim de jogo!!")
-      setMatriz([...matrizJson])
+      setMatriz(JSON.parse(sessionStorage.getItem('matrizJson') || ''))
       setGameOver(false)
       setNextPlay('')
       setIconSelected('')
     }
   },[gameOver])
-
-  const finish = () => {
-    setMatriz([...matrizJson])
-    setGameOver(false)
-    setNextPlay('')
-    setIconSelected('')
-  }
 
   return (
     <div className="flex flex-col items-center mx-auto">
@@ -114,10 +114,6 @@ const Home = () => {
             </div>
           )
         }
-
-        <button onClick={finish} className='btn '>
-          Reset
-        </button>
       </div>
     </div>
   )

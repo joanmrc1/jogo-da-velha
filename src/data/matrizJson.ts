@@ -1,4 +1,4 @@
-export default [
+const matrizJson = [
   [
     {
       "type": null,
@@ -42,4 +42,6 @@ export default [
     }
   ]
 ]
+
+export default matrizJson
 
